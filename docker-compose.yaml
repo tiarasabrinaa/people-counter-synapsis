@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # 🟢 MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: people_counting_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: people_counting_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./backend/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - people_counting_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/people_counting_db --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 🟡 Backend API Server
+  backend_api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: people_counting_api
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/
+      - DATABASE_NAME=people_counting_db
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - MODEL_PATH=/app/models/best.pt
+      - STREAM_URL=https://cctvjss.jogjakota.go.id/malioboro/Malioboro_10_Kepatihan.stream/playlist.m3u8
+      - CORS_ORIGINS=["http://localhost:8080","http://localhost:3000","http://127.0.0.1:8080","http://127.0.0.1:3000"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/models:/app/models
+      - ./backend/logs:/app/logs
+    networks:
+      - people_counting_network
+    # 🧠 Gunakan Uvicorn langsung dengan multi-worker
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+      --workers 2
+      --timeout-keep-alive 65
+      --log-level info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # 🔵 Detection Worker Service
+  detection_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: people_counting_detection
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      backend_api:
+        condition: service_healthy
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/
+      - DATABASE_NAME=people_counting_db
+      - MODEL_PATH=/app/models/best.pt
+      - STREAM_URL=https://cctvjss.jogjakota.go.id/malioboro/Malioboro_10_Kepatihan.stream/playlist.m3u8
+      - FRAME_SKIP=2
+      - CONFIDENCE_THRESHOLD=0.5
+    volumes:
+      - ./backend/models:/app/models
+      - ./backend/logs:/app/logs
+    networks:
+      - people_counting_network
+    command: python run_detection.py
+
+  # 🧰 MongoDB Web UI (optional)
+  mongo_express:
+    image: mongo-express:latest
+    container_name: people_counting_mongo_express
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    ports:
+      - "8081:8081"
+    networks:
+      - people_counting_network
+
+# 🔗 Shared network
+networks:
+  people_counting_network:
+    driver: bridge
+
+# 💾 Persistent volume
+volumes:
+  mongodb_data:
+    driver: local

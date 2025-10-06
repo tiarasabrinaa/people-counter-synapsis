@@ -1,0 +1,35 @@
+# FastAPI & Server
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+
+# Database
+pymongo
+motor
+
+# ML & Computer Vision
+ultralytics
+opencv-python
+opencv-python-headless
+numpy
+scipy
+
+# Data Processing
+pandas
+scikit-learn
+
+# Forecasting
+prophet
+statsmodels
+
+# Geometry
+shapely
+
+# Video Streaming
+streamlink
+av
+
+# Utilities
+pydantic
+pydantic-settings

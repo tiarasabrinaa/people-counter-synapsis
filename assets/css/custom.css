@@ -1,0 +1,299 @@
+/* Custom styles for People Counting Dashboard */
+
+/* Live count display */
+.live-count-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.live-count-value {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Status badge */
+.status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Metric cards */
+.metric-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: #67748e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.metric-change {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+    padding: 1rem;
+}
+
+.chart-container-small {
+    height: 200px;
+}
+
+/* Table styles */
+.table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.table-responsive::-webkit-scrollbar {
+    width: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Button styles */
+.btn-refresh {
+    transition: all 0.3s ease;
+}
+
+.btn-refresh:hover {
+    transform: rotate(180deg);
+}
+
+.btn-refresh.loading {
+    animation: spin 1s linear infinite;
+}
+
+/* Real-time indicator */
+.realtime-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: rgba(52, 211, 153, 0.1);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: #10b981;
+    font-weight: 600;
+}
+
+.realtime-dot {
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
+}
+
+/* Card gradient backgrounds */
+.card-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card-gradient-success {
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+.card-gradient-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.card-gradient-warning {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+/* Info tooltips */
+.info-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.info-tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #67748e;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    opacity: 0.3;
+    margin-bottom: 1rem;
+}
+
+/* Alert banners */
+.alert-banner {
+    border-left: 4px solid;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+}
+
+.alert-banner.alert-info {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #1e40af;
+}
+
+.alert-banner.alert-warning {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: #fbbf24;
+    color: #92400e;
+}
+
+.alert-banner.alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .live-count-value {
+        font-size: 2.5rem;
+    }
+    
+    .metric-value {
+        font-size: 1.5rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .metric-label {
+        color: #a0aec0;
+    }
+    
+    .info-tooltip:hover::after {
+        background: rgba(255, 255, 255, 0.9);
+        color: black;
+    }
+}
+
+/* Smooth transitions */
+* {
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+select:focus,
+input:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .sidenav,
+    .btn,
+    .realtime-indicator {
+        display: none !important;
+    }
+    
+    .card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
