@@ -180,16 +180,6 @@ def draw_detections_on_frame(frame, tracked_detections, poly_mgr: PolygonManager
             db_ref, track_id, [x1, y1, x2, y2], in_polygon, conf
         ))
 
-    # counters panel
-    panel_w, panel_h = 330, 140
-    cv2.rectangle(frame, (12, 12), (12 + panel_w, 12 + panel_h), (0, 0, 0), -1)
-    cv2.putText(frame, f"Enter : {enter_count}", (24, 60),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 3)
-    cv2.putText(frame, f"Exit  : {exit_count}", (24, 100),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 3)
-    cv2.putText(frame, f"Inside: {current_inside}", (24, 136),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 0), 3)
-
     return frame
 
 

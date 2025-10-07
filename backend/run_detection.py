@@ -211,29 +211,28 @@ class DetectionService:
             return frame
     
     def draw_dashboard(self, frame, tracked_detections):
-        """Draw bounding boxes, trajectories, stats, and (optional) polygon"""
+        """Draw (only) polygon, boxes, id, and trajectories. No HUD counters."""
         # (optional) draw polygon if available
         if self.polygon_manager and len(self.polygon_manager.coordinates) >= 3:
             pts = np.array(self.polygon_manager.coordinates, np.int32)
             cv2.polylines(frame, [pts], isClosed=True, color=(0, 255, 0), thickness=3)
 
-        # boxes + ids + lines
+        # boxes + id + trajectory
         for x1, y1, x2, y2, conf, track_id in tracked_detections:
-            color = (0, 0, 255)  # default merah
-            cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), color, 2)
-            cv2.putText(frame, f"ID:{int(track_id)} ({conf:.2f})", (int(x1), int(max(20, y1 - 8))),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 200, 255), 2)
+            cv2.putText(frame, f"ID:{int(track_id)} ({conf:.2f})",
+                        (x1, max(20, y1 - 8)), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (255, 255, 255), 2)
+
             pts = self.track_history.get(track_id, [])
             if len(pts) > 1:
                 for i in range(1, len(pts)):
                     cv2.line(frame, pts[i-1], pts[i], (0, 255, 255), 3)
 
-        # panel
-        cv2.rectangle(frame, (12, 12), (360, 160), (0, 0, 0), -1)
-        cv2.putText(frame, f"ENTER : {self.enter_count}",  (24, 60),  cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,255,0), 3)
-        cv2.putText(frame, f"EXIT  : {self.exit_count}",   (24, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,255), 3)
-        cv2.putText(frame, f"INSIDE: {self.current_inside}", (24, 140), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255,255,0), 3)
+        # —— NO HUD / NO ENTER-EXIT-INSIDE PANEL ——
         return frame
+
     
     async def save_detection(self, track_id: int, bbox: list, in_polygon: bool, confidence: float):
         """Save detection to database"""

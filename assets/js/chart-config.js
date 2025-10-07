@@ -174,6 +174,9 @@ class ChartManager {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                layout: {                                     // >>> tambahkan ini
+                    padding: { left: 6, right: 4, top: 6, bottom: 6 }
+                },
                 plugins: {
                     legend: {
                         display: false
