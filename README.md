@@ -11,6 +11,8 @@
 CHALLENGE 1: DESAIN DATABASE
 Untuk sistem ini, digunakan NoSQL database dengan MongoDB karena fleksibilitasnya dalam menyimpan data yang tidak terstruktur. Database ini terdiri dari 3 koleksi utama: Deteksi, Counting, dan Area Config.
 
+![database](./assets/img/database.png)
+
 1. Deteksi (detections)
 Menyimpan data deteksi objek (misalnya orang) yang terdeteksi dalam video feed.
 Field:
