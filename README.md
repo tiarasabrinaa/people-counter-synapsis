@@ -1,183 +1,101 @@
-# [Soft UI Dashboard 3](http://demos.creative-tim.com/soft-ui-dashboard/pages/dashboard.html?ref=readme-sud) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?url=https://www.creative-tim.com/product/soft-ui-dashboard&text=Check%20Soft%20UI%20Dashboard%20made%20by%20@CreativeTim%20#webdesign%20#dashboard%20#softdesign%20#html%20https://www.creative-tim.com/product/soft-ui-dashboard) [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/FhCJCaHdQa)
+![Deskripsi Gambar](./assets/img/dashboard.png)
 
-![version](https://img.shields.io/badge/version-1.1.0-blue.svg) [![GitHub issues open](https://img.shields.io/github/issues/creativetimofficial/soft-ui-dashboard.svg)](https://github.com/creativetimofficial/soft-ui-dashboard/issues?q=is%3Aopen+is%3Aissue) [![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/creativetimofficial/soft-ui-dashboard.svg)](https://github.com/creativetimofficial/soft-ui-dashboard/issues?q=is%3Aissue+is%3Aclosed)
+1. Desain Database  (Done) 
+2. Pengumpulan Dataset (Done)
+4. Object Detection & Tracking (Done) 
+5. Counting & Polygon Area  (Done) 
+6. Prediksi (Forecasting) (Done)
+7. Integrasi API (API/Front End) (Done)
+8. Deployment (Done)
 
-![Image](https://s3.amazonaws.com/creativetim_bucket/products/450/original/opt_sd_free_thumbnail.jpg?1617715816)
+CHALLENGE 1: DESAIN DATABASE
+Untuk sistem ini, digunakan NoSQL database dengan MongoDB karena fleksibilitasnya dalam menyimpan data yang tidak terstruktur. Database ini terdiri dari 3 koleksi utama: Deteksi, Counting, dan Area Config.
 
-Most complex and innovative Dashboard Made by [Creative Tim](https://creative-tim.com/). Check our latest Free Bootstrap 5 Dashboard.
+1. Deteksi (detections)
+Menyimpan data deteksi objek (misalnya orang) yang terdeteksi dalam video feed.
+Field:
+- track_id (Integer): ID unik untuk setiap objek yang terdeteksi.
+- timestamp (Datetime): Waktu deteksi objek.
+- bbox (Array): Koordinat bounding box (x1, y1, x2, y2).
+- in_polygon (Boolean): Menunjukkan apakah objek berada dalam area polygon.
+- area_name (String): Nama area polygon.
 
-Designed for those who like bold elements and beautiful websites. Made of hundred of elements, designed blocks and fully coded pages, Soft UI Dashboard is ready to help you create stunning websites and webapps.
+2. Counting Events (counting_events)
+Menyimpan data jumlah orang yang masuk atau keluar dari area polygon.
+Field:
+- track_id (Integer): ID unik dari objek yang terdeteksi.
+- event_type (String): Jenis event (masuk/keluar).
+- timestamp (Datetime): Waktu terjadinya event.
+- area_name (String): Nama area polygon.
 
-We created many examples for pages like Sign In, Profile and so on. Just choose between a Basic Design, an illustration or a cover and you are good to go!
+3. Area Config (area_config)
+Menyimpan data konfigurasi area polygon yang digunakan untuk deteksi.
+Field:
+- area_name (String): Nama area polygon.
+- coordinates (Array): Koordinat dari polygon yang digunakan untuk deteksi.
+- description (String): Deskripsi area (misalnya, nama lokasi).
+- created_at (Datetime): Waktu pembuatan area.
+- updated_at (Datetime): Waktu terakhir area diperbarui.
 
-**Fully Coded Elements**
+Relasi Antar Tabel
+Deteksi berhubungan dengan Area Config melalui area_name.
+Counting Events berhubungan dengan Deteksi melalui track_id.
 
-Soft UI Dashboard is built with over 70 frontend individual elements, like buttons, inputs, navbars, navtabs, cards or alerts, giving you the freedom of choosing and combining. All components can take variations in colour, that you can easily modify using SASS files and classes.
+CHALLENGE 2: PENGUMPULAN DATASET
+Dataset yang Digunakan:
+- Malioboro_10_Kepatihan.stream
+- Malioboro_30_Pasar_Beringharjo.stream
+- NolKm_Utara.stream
+Dataset diambil secara langsung dari live stream cctv daerah Yogyakarta. Dataset diambil dengan beberapa variasi kondisi, berdasarkan waktu mulai dari pagi, siang, dan malam, serta berdasarkan tingkat keramaian mulai dari sepi, sedang, hingga sangat ramai. Hal ini dilakukan untuk membuat generalisasi model dan mengoptimalkan pendeteksian. Anotasi dilakukan secara mandiri menggunakan platform Roboflow, berikut gambar proses anotasi.
+![anotasi](./assets/img/roboflow.png)
 
-You will save a lot of time going from prototyping to full-functional code, because all elements are implemented.
-This Free Bootstrap 5 Dashboard is coming with prebuilt design blocks, so the development process is seamless,
-switching from our pages to the real website is very easy to be done.
+Jumlah data yang digunakan adalah 160 dengan masing-masing gambar rata-rata memiliki 10 lebih objek yang teranotasi, dengan pembagian 70% untuk train, 20% untuk validasi, dan 10% untuk test.
 
-View [all components here](https://www.creative-tim.com/learning-lab/bootstrap/alerts/soft-ui-dashboard?ref=readme-sud).
+CHALLENGE 3: OBJECT DETECTION & TRACKING
 
-**Documentation built by Developers**
+Implementasi Deteksi dan Pelacakan
+YOLOv11m digunakan untuk mendeteksi objek (misalnya orang) di dalam video feed. Pengerjaan training dapat dilihat "dashboard-people-counter/backend/models/model-training.ipynb"  pada Setelah objek terdeteksi, Centroid Tracking digunakan untuk melacak objek tersebut berdasarkan ID unik. Sistem kemudian menghitung berapa kali objek masuk atau keluar dari area polygon yang telah ditentukan.
 
-Each element is well presented in a very complex documentation.
-You can read more about the <a href="https://www.creative-tim.com/learning-lab/bootstrap/overview/soft-ui-dashboard" target="_blank">documentation here</a>.
+Hasil testing
+Final Epoch Results:
+  mAP@50     : 0.8818
+  mAP@50-95  : 0.5942
 
-**Example Pages**
+Other Metrics:
+  Precision  : 0.8689
+  Recall     : 0.8164
 
-If you want to get inspiration or just show something directly to your clients,
-you can jump start your development with our pre-built example pages. You will be able
-to quickly set up the basic structure for your web project.
-View <a href="https://demos.creative-tim.com/soft-ui-dashboard/pages/dashboard.html" target="_blank">example pages here</a>.
+![Testing](./assets/img/training.png)
+![Testing](./assets/img/testing-img.png)
 
-**HELPFUL LINKS**
+Langkah-langkah Implementasi:
+- Deteksi Objek: Menggunakan model YOLO untuk mendeteksi objek dalam video.
+- Tracking: Menggunakan Centroid Tracking untuk melacak objek yang terdeteksi berdasarkan ID unik dan menghitung jumlah orang yang masuk/keluar area.
+- Counting: Setiap kali objek masuk atau keluar dari area polygon, perhitungan dilakukan untuk mencatat jumlah orang yang berada di dalam area.
 
-- View <a href="https://github.com/creativetimofficial/soft-ui-dashboard" target="_blank">Github Repository</a>
+CHALLENGE 6:: INTEGRASI SISTEM (API & DASHBOARD)
 
-- Check <a href="https://www.creative-tim.com/faq" target="_blank">FAQ Page</a>
+Program ini sudah dilengkapi front-end dan backend. Frontend sistem ini menggunakan JavaScript dan Backend sistem ini menggunakan FastAPI. Beberapa endpoint yang digunakan:
 
-#### Special thanks
-During the development of this dashboard, we have used many existing resources from awesome developers. We want to thank them for providing their tools open source:
-- [Bootstrap 5](https://www.getbootstrap.com)- Open source front end framework
-- [Popper.js](https://popper.js.org/) - Kickass library used to manage poppers
-- [Nepcha Analytics](https://nepcha.com?ref=readme) for the analytics tool. Nepcha is already integrated with Soft UI Dashboard. You can use it to gain insights into your sources of traffic.
+Statistics Endpoints:
+GET /api/stats/: Mengambil statistik umum (data perhitungan).
+GET /api/stats/live: Mengambil statistik langsung/real-time.
+GET /api/stats/detections: Mengambil data deteksi objek yang terdeteksi oleh sistem.
+GET /api/stats/events: Mengambil event terkait perhitungan objek (misalnya masuk atau keluar).
+POST /api/stats/forecast: Menghasilkan prediksi/ramalan untuk perhitungan objek di masa depan.
 
-Let us know your thoughts below. And good luck with development!
+Configuration Endpoints:
+GET /api/video/stream: Mengambil aliran video langsung dari sistem.
+GET /api/video/snapshot: Mengambil snapshot gambar dari video stream.
 
-## Table of Contents
+Root & Health:
+GET /: Mengambil informasi dasar dari root API.
+GET /health: Memeriksa status kesehatan API (health check).
 
-- [Soft UI Dashboard  ](#soft-ui-dashboard--)
-      - [Special thanks](#special-thanks)
-  - [Table of Contents](#table-of-contents)
-  - [Versions](#versions)
-  - [Demo](#demo)
-  - [Quick start](#quick-start)
-  - [Deploy](#deploy)
-  - [Terminal Commands](#terminal-commands)
-  - [Documentation](#documentation)
-    - [What's included](#whats-included)
-  - [Browser Support](#browser-support)
-  - [Resources](#resources)
-  - [Reporting Issues](#reporting-issues)
-  - [Technical Support or Questions](#technical-support-or-questions)
-  - [Licensing](#licensing)
-  - [Useful Links](#useful-links)
-        - [Social Media](#social-media)
+CHALLENGE 7: DEPLOY
 
-## Versions
-
-[<img src="https://s3.amazonaws.com/creativetim_bucket/github/html.png" width="60" height="60" />](https://www.creative-tim.com/product/soft-ui-dashboard?ref=readme-sud)
-
-| HTML |
-| --- |
-| [![Soft UI Dashboard HTML](https://s3.amazonaws.com/creativetim_bucket/products/450/thumb/opt_sd_free_thumbnail.jpg?1617715816)](http://demos.creative-tim.com/soft-ui-dashboard/pages/dashboard.html?ref=readme-sud)
-
-## Demo
-
-- [Profile page](http://demos.creative-tim.com/soft-ui-dashboard/pages/profile.html?ref=readme-sud)
-- [Sign in page](http://demos.creative-tim.com/soft-ui-dashboard/pages/sign-in.html?ref=readme-sud)
-- [Sign up page](https://demos.creative-tim.com/soft-ui-dashboard/pages/sign-up.html?ref=readme-sud)
-
-[View More](https://demos.creative-tim.com/soft-ui-dashboard/pages/dashboard.html?ref=readme-sud).
-
-## Quick start
-
-Quick start options:
-
-- Download from [Creative Tim](https://www.creative-tim.com/product/soft-ui-dashboard?ref=readme-sud).
-
-## Terminal Commands
-
-1. Download and Install NodeJs from [NodeJs Official Page](https://nodejs.org/en/download/).
-2. Navigate to the root / directory and run npm install to install our local dependencies.
-
-## Deploy
-
-:rocket: You can deploy your own version of the template to Genezio with one click:
-
-[![Deploy to Genezio](https://raw.githubusercontent.com/Genez-io/graphics/main/svg/deploy-button.svg)](https://app.genez.io/start/deploy?repository=https://github.com/creativetimofficial/soft-ui-dashboard&utm_source=github&utm_medium=referral&utm_campaign=github-creativetim&utm_term=deploy-project&utm_content=button-head)
-
-## Documentation
-The documentation for the Soft UI Dashboard is hosted at our [website](https://www.creative-tim.com/learning-lab/bootstrap/overview/soft-ui-dashboard?ref=readme-sud).
-
-### What's included
-
-Within the download you'll find the following directories and files:
-
-```
-soft-ui-dashboard
-    ├── assets
-    │   ├── css
-    │   ├── fonts
-    │   ├── img
-    │   ├── js
-    │   │   ├── core
-    │   │   ├── plugins
-    │   │   └── soft-ui-dashboard.js
-    │   │   └── soft-ui-dashboard.js.map
-    │   │   └── soft-ui-dashboard.min.js
-    │   └── scss
-    │       ├── soft-ui-dashboard
-    │       └── soft-ui-dashboard.scss
-    ├── docs
-    │   ├── documentation.html
-    ├── pages
-    ├── CHANGELOG.md
-    ├── gulpfile.js
-    ├── package.json
-```
-
-## Browser Support
-
-At present, we officially aim to support the last two versions of the following browsers:
-
-<img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/chrome.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/firefox.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/edge.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/safari.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/opera.png" width="64" height="64">
-
-## Resources
-- [Live Preview](https://demos.creative-tim.com/soft-ui-dashboard/pages/dashboard.html?ref=readme-sud)
-- [Download Page](https://www.creative-tim.com/product/soft-ui-dashboard?ref=readme-sud)
-- Documentation is [here](https://www.creative-tim.com/learning-lab/bootstrap/overview/soft-ui-dashboard?ref=readme-sud)
-- [License Agreement](https://www.creative-tim.com/license?ref=readme-sud)
-- [Support](https://www.creative-tim.com/contact-us?ref=readme-sud)
-- Issues: [Github Issues Page](https://github.com/creativetimofficial/soft-ui-dashboard/issues)
-- [Nepcha Analytics](https://nepcha.com?ref=readme) - Analytics tool for your website
-
-## Reporting Issues
-We use GitHub Issues as the official bug tracker for the Soft UI Dashboard. Here are some advices for our users that want to report an issue:
-
-1. Make sure that you are using the latest version of the Soft UI Dashboard. Check the CHANGELOG from your dashboard on our [website](https://www.creative-tim.com/product/soft-ui-dashboard?ref=readme-sud).
-2. Providing us reproducible steps for the issue will shorten the time it takes for it to be fixed.
-3. Some issues may be browser specific, so specifying in what browser you encountered the issue might help.
-
-## Technical Support or Questions
-
-If you have questions or need help integrating the product please [contact us](https://www.creative-tim.com/contact-us?ref=readme-sud) instead of opening an issue.
-
-## Licensing
-
-- Copyright 2023 [Creative Tim](https://www.creative-tim.com?ref=readme-sud)
-- Creative Tim [license](https://www.creative-tim.com/license?ref=readme-sud)
-
-## Useful Links
-
-- [More products](https://www.creative-tim.com/templates?ref=readme-sud) from Creative Tim
-
-- [Tutorials](https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w)
-
-- [Freebies](https://www.creative-tim.com/bootstrap-themes/free?ref=readme-sud) from Creative Tim
-
-- [Affiliate Program](https://www.creative-tim.com/affiliates/new?ref=readme-sud) (earn money)
-
-##### Social Media
-
-Twitter: <https://twitter.com/CreativeTim>
-
-Facebook: <https://www.facebook.com/CreativeTim>
-
-Dribbble: <https://dribbble.com/creativetim>
-
-TikTok: <https://tiktok.com/@creative.tim>
-
-Instagram: <https://instagram.com/creativetimofficial>
+Program ini sudah mengimplementasikan conterization, cara running program:
+1. Menjalankan Backend: buka direktori root, kemudian jalankan 'docker-compose up -d --build'
+2. Menjalankan Frontend: buka direktori root, kemudian jalankan python3 -m http.server 3000
+3. Akses Frontend dari browser 'http://localhost:3000/pages/dashboard.html'
+4. Akses Backend (BE) di Browser atau API Client 'http://localhost:8000/docs'
